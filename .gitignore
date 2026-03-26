@@ -1,0 +1,13 @@
+backend/venv/ 
+frontend/venv/ 
+frontend/node_modules/ 
+.env 
+chromadb_store/ 
+__pycache__/ 
+*.pyc 
+.env 
+chromadb_store/ 
+__pycache__/ 
+*.pyc 
+.gitignore.txt 
+README.md.txt 

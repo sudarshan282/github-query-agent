@@ -1,0 +1,121 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Press Start 2P', cursive;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #111111;
+  --cyan: #ff6a00;
+  --pink: #ff6a00;
+  --cyan-dim: #cc5500;
+  --pink-dim: #cc5500;
+  --white: #ffffff;
+  --gray: #555555;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--cyan);
+  margin: 0;
+  padding: 0;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--cyan);
+}
+
+.pixel-border {
+  border: 3px solid var(--pink);
+  box-shadow: 4px 4px 0px var(--pink-dim);
+}
+
+.pixel-border-cyan {
+  border: 3px solid var(--cyan);
+  box-shadow: 4px 4px 0px var(--cyan-dim);
+}
+
+.pixel-btn {
+  background-color: var(--pink);
+  color: #000;
+  border: 3px solid var(--pink-dim);
+  box-shadow: 4px 4px 0px var(--pink-dim);
+  padding: 12px 20px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  transition: none;
+}
+
+.pixel-btn:hover {
+  background-color: var(--pink-dim);
+  box-shadow: 2px 2px 0px var(--pink-dim);
+  transform: translate(2px, 2px);
+}
+
+.pixel-btn:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.pixel-btn-cyan {
+  background-color: var(--cyan);
+  color: #000;
+  border: 3px solid var(--cyan-dim);
+  box-shadow: 4px 4px 0px var(--cyan-dim);
+  padding: 12px 20px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  transition: none;
+}
+
+.pixel-btn-cyan:hover {
+  background-color: var(--cyan-dim);
+  box-shadow: 2px 2px 0px var(--cyan-dim);
+  transform: translate(2px, 2px);
+}
+
+.pixel-btn-cyan:active {
+  box-shadow: none;
+  transform: translate(4px, 4px);
+}
+
+.pixel-input {
+  background-color: var(--bg-tertiary);
+  color: var(--cyan);
+  border: 3px solid var(--cyan);
+  box-shadow: 4px 4px 0px var(--cyan-dim);
+  padding: 12px 14px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 11px;
+  outline: none;
+  width: 100%;
+}
+
+.pixel-input:focus {
+  border-color: var(--pink);
+  box-shadow: 4px 4px 0px var(--pink-dim);
+}
+
+.pixel-input::placeholder {
+  color: var(--gray);
+}
+
+.pixel-card {
+  background-color: var(--bg-secondary);
+  border: 3px solid var(--cyan);
+  box-shadow: 6px 6px 0px var(--cyan-dim);
+  padding: 24px;
+}
