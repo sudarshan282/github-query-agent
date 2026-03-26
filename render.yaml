@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: github-query-agent
+    language: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 300
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+```
+
+The key part is `--timeout-keep-alive 300` which gives 5 minutes.
+
+Also update the start command in Render dashboard → Settings → Start Command to:
+```
+uvicorn main:app --host 0.0.0.0 --port $PORT --timeout-keep-alive 300 
