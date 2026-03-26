@@ -134,7 +134,7 @@ function SuggestionsPanel() {
     setSuggestions(null)
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/improve")
+      const response = await axios.post("https://github-query-agent.onrender.com/improve")
       setSuggestions(response.data.suggestions)
       setSources(response.data.sources)
     } catch (error) {

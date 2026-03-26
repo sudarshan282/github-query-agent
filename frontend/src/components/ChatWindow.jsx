@@ -268,7 +268,7 @@ function ChatWindow() {
     setLoading(true)
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/query", {
+      const response = await axios.post("https://github-query-agent.onrender.com/query", {
         question: userMessage
       })
       setMessages(prev => [...prev, {
