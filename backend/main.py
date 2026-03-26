@@ -15,7 +15,7 @@ app = FastAPI(title="GitHub Query Agent")
 # CORS — allows our React frontend to talk to this backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React runs on this port by default
+    allow_origins=["http://localhost:5173", "https://github-query-agent.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
