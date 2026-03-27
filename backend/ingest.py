@@ -4,7 +4,7 @@ import shutil
 from github import Github
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 
 load_dotenv()

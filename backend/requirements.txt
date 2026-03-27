@@ -13,3 +13,4 @@ filetype
 langchain-groq
 groq
 langchain-chroma==0.1.4
+tokenizers==0.15.2sentence-transformers 
