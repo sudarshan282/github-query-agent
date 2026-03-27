@@ -26,7 +26,7 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_event():
     logger.info("Preloading HuggingFace embedding model...")
-    HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
     logger.info("Model loaded and ready!")
 
 class RepoRequest(BaseModel):

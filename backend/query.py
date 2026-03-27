@@ -13,7 +13,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 def get_vectorstore():
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
     vectorstore = Chroma(
         persist_directory="./chromadb_store",
         embedding_function=embeddings

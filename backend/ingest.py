@@ -115,7 +115,7 @@ def ingest_repo(repo_url: str):
     documents, metadatas = chunk_files(files)
 
     print("\nEmbedding and storing in ChromaDB...")
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
 
     Chroma.from_texts(
         texts=documents,
@@ -181,7 +181,7 @@ def ingest_repo_stream(repo_url: str):
 
     yield json.dumps({"type": "status", "message": f"EMBEDDING {len(documents)} CHUNKS..."}) + "\n"
 
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
 
     Chroma.from_texts(
         texts=documents,
