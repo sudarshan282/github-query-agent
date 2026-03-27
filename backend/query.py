@@ -9,16 +9,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 def get_vectorstore():
-    """Loads the ChromaDB store we created during ingestion"""
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=GEMINI_API_KEY
-    )
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     vectorstore = Chroma(
         persist_directory="./chromadb_store",
         embedding_function=embeddings
@@ -27,12 +22,10 @@ def get_vectorstore():
 
 
 def format_docs(docs):
-    """Joins retrieved chunks into a single string for the prompt"""
     return "\n\n".join([doc.page_content for doc in docs])
 
 
 def get_llm(temperature=0.2):
-    """Returns Groq LLM"""
     return ChatGroq(
         model="llama-3.3-70b-versatile",
         api_key=GROQ_API_KEY,
@@ -41,8 +34,6 @@ def get_llm(temperature=0.2):
 
 
 def answer_question(question: str):
-    """Takes a question and answers it using the repo context"""
-
     vectorstore = get_vectorstore()
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
@@ -94,8 +85,6 @@ Answer:
 
 
 def suggest_improvements():
-    """Analyzes the repo and suggests improvements"""
-
     vectorstore = get_vectorstore()
     retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
 

@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
 ALLOWED_EXTENSIONS = [
@@ -30,7 +29,6 @@ def get_github_client():
 
 
 def fetch_repo_files(repo_url: str):
-    """Fetches all readable files from a GitHub repo in ONE API call"""
     parts = repo_url.rstrip("/").split("github.com/")
     repo_path = parts[1]
 
@@ -63,7 +61,6 @@ def fetch_repo_files(repo_url: str):
 
 
 def chunk_files(files: list):
-    """Splits file contents into smaller chunks for embedding"""
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=100
@@ -86,7 +83,6 @@ def chunk_files(files: list):
 
 
 def clear_chromadb():
-    """Safely clears the chromadb store on Windows"""
     if os.path.exists("./chromadb_store"):
         import gc
         gc.collect()
@@ -108,7 +104,6 @@ def clear_chromadb():
 
 
 def ingest_repo(repo_url: str):
-    """Main function — fetches, chunks, embeds and stores repo in ChromaDB"""
     print(f"\nStarting ingestion for: {repo_url}")
 
     clear_chromadb()
@@ -120,10 +115,7 @@ def ingest_repo(repo_url: str):
     documents, metadatas = chunk_files(files)
 
     print("\nEmbedding and storing in ChromaDB...")
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=GEMINI_API_KEY
-    )
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     Chroma.from_texts(
         texts=documents,
@@ -141,7 +133,6 @@ def ingest_repo(repo_url: str):
 
 
 def ingest_repo_stream(repo_url: str):
-    """Generator function that yields progress updates during ingestion"""
     import json
 
     yield json.dumps({"type": "status", "message": "STARTING INGESTION..."}) + "\n"
@@ -190,10 +181,7 @@ def ingest_repo_stream(repo_url: str):
 
     yield json.dumps({"type": "status", "message": f"EMBEDDING {len(documents)} CHUNKS..."}) + "\n"
 
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/gemini-embedding-001",
-        google_api_key=GEMINI_API_KEY
-    )
+    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
 
     Chroma.from_texts(
         texts=documents,
