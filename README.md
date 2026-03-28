@@ -1,13 +1,5 @@
 # GitHub Query Agent
 
-![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-green?logo=fastapi)
-![React](https://img.shields.io/badge/React-Vite-61DAFB?logo=react)
-![Groq](https://img.shields.io/badge/LLM-Groq-orange)
-![Cohere](https://img.shields.io/badge/Embeddings-Cohere-purple)
-![ChromaDB](https://img.shields.io/badge/VectorDB-ChromaDB-red)
-![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)
-
 An agentic RAG system that ingests GitHub repositories into a vector database and enables natural language querying and AI-powered code review — built with LangChain, Groq, Cohere, and ChromaDB.
 
 ## What it does
@@ -17,7 +9,7 @@ An agentic RAG system that ingests GitHub repositories into a vector database an
 - Get a full AI-powered code review with improvement suggestions
 - Copy or download code snippets from responses
 - Export chat history and improvement scans
-- Remembers previously ingested repos
+- Supports multiple repos — switch anytime without refreshing
 
 ## Tech Stack
 
@@ -37,10 +29,6 @@ An agentic RAG system that ingests GitHub repositories into a vector database an
 **Deployed on**
 - Vercel (frontend)
 - Render (backend)
-
-## Live Demo
-
-[github-query-agent.vercel.app](https://github-query-agent.vercel.app)
 
 ## Setup (Local)
 
@@ -65,6 +53,7 @@ Copy `.env.example` to `.env` and fill in your keys:
 GROQ_API_KEY=your_groq_api_key
 COHERE_API_KEY=your_cohere_api_key
 GITHUB_TOKEN=your_github_token_optional
+COLLECTION_FILE=./current_collection.txt
 ```
 
 Get your keys here:
@@ -105,5 +94,7 @@ Go to `http://localhost:5173`
 ## Notes
 
 - First request after inactivity may take 30-60 seconds (Render free tier spin-up)
+- Ingestion batches chunks with 60s cooldown between batches to respect Cohere trial rate limits
 - Only public GitHub repositories are supported without a token
 - Private repos require a GitHub personal access token
+- For local development, set `VITE_API_URL=http://localhost:8000` in `frontend/.env`
