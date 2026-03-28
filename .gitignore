@@ -11,3 +11,5 @@ __pycache__/
 *.pyc 
 .gitignore.txt 
 README.md.txt 
+frontend/.env 
+frontend/.env.production 
