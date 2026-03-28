@@ -1,5 +1,6 @@
 import os
 import time
+import shutil
 from github import Github
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
@@ -62,8 +63,8 @@ def fetch_repo_files(repo_url: str):
 
 def chunk_files(files: list):
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=100
+        chunk_size=3000,
+        chunk_overlap=200
     )
 
     documents = []
@@ -83,24 +84,12 @@ def chunk_files(files: list):
 
 
 def clear_chromadb():
-    if os.path.exists("./chromadb_store"):
-        import gc
-        gc.collect()
-        for root, dirs, files in os.walk("./chromadb_store", topdown=False):
-            for file in files:
-                try:
-                    os.remove(os.path.join(root, file))
-                except Exception:
-                    pass
-            for dir in dirs:
-                try:
-                    os.rmdir(os.path.join(root, dir))
-                except Exception:
-                    pass
-        try:
-            os.rmdir("./chromadb_store")
-        except Exception:
-            pass
+    try:
+        if os.path.exists("./chromadb_store"):
+            shutil.rmtree("./chromadb_store", ignore_errors=True)
+            print("ChromaDB cleared!")
+    except Exception as e:
+        print(f"Error clearing ChromaDB: {e}")
 
 
 def ingest_repo(repo_url: str):

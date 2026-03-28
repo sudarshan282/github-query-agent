@@ -4,8 +4,10 @@ import ChatWindow from "./components/ChatWindow"
 import SuggestionsPanel from "./components/SuggestionsPanel"
 
 function App() {
- const [ingested, setIngested] = useState(false)
-const [currentRepo, setCurrentRepo] = useState("")
+  const [ingested, setIngested] = useState(false)
+  const [currentRepo, setCurrentRepo] = useState("")
+  const [resetKey, setResetKey] = useState(0)
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -41,24 +43,24 @@ const [currentRepo, setCurrentRepo] = useState("")
           color: ingested ? "var(--cyan)" : "var(--gray)"
         }}>
           <div style={{
-  marginTop: "12px",
-  fontSize: "11px",
-  color: ingested ? "var(--cyan)" : "var(--gray)"
-}}>
-  STATUS:{" "}
-  <span style={{
-    display: "inline-block",
-    width: "12px",
-    height: "12px",
-    background: ingested ? "var(--cyan)" : "transparent",
-    border: `2px solid ${ingested ? "var(--cyan)" : "var(--gray)"}`,
-    marginRight: "6px",
-    verticalAlign: "middle",
-    position: "relative",
-    top: "-1px"
-  }}/>
-  {ingested ? "REPO LOADED" : "NO REPO LOADED"}
-</div>
+            marginTop: "12px",
+            fontSize: "11px",
+            color: ingested ? "var(--cyan)" : "var(--gray)"
+          }}>
+            STATUS:{" "}
+            <span style={{
+              display: "inline-block",
+              width: "12px",
+              height: "12px",
+              background: ingested ? "var(--cyan)" : "transparent",
+              border: `2px solid ${ingested ? "var(--cyan)" : "var(--gray)"}`,
+              marginRight: "6px",
+              verticalAlign: "middle",
+              position: "relative",
+              top: "-1px"
+            }}/>
+            {ingested ? `REPO LOADED — ${currentRepo.split("/").slice(-2).join("/")}` : "NO REPO LOADED"}
+          </div>
         </div>
       </div>
 
@@ -66,19 +68,20 @@ const [currentRepo, setCurrentRepo] = useState("")
       <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
 
         <RepoInput onIngestSuccess={(url) => {
-  setIngested(true)
-  setCurrentRepo(url)
-}} />
+          setIngested(true)
+          setCurrentRepo(url)
+          setResetKey(prev => prev + 1)
+        }} />
 
         {ingested ? (
-  <div style={{
-    display: "flex",
-    flexDirection: "column",
-    gap: "24px"
-  }}>
-    <ChatWindow />
-    <SuggestionsPanel />
-  </div>
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "24px"
+          }}>
+            <ChatWindow key={`chat-${resetKey}`} />
+            <SuggestionsPanel key={`suggestions-${resetKey}`} />
+          </div>
         ) : (
           <div style={{
             textAlign: "center",
