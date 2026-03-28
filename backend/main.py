@@ -1,5 +1,4 @@
 import os
-import logging
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -7,11 +6,8 @@ from ingest import ingest_repo, ingest_repo_stream
 from query import answer_question, suggest_improvements
 from dotenv import load_dotenv
 from fastapi.responses import StreamingResponse
-from langchain_community.embeddings import HuggingFaceEmbeddings
 
 load_dotenv()
-
-logger = logging.getLogger(__name__)
 
 app = FastAPI(title="GitHub Query Agent")
 
@@ -22,12 +18,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-async def startup_event():
-    logger.info("Preloading HuggingFace embedding model...")
-    HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
-    logger.info("Model loaded and ready!")
 
 class RepoRequest(BaseModel):
     repo_url: str

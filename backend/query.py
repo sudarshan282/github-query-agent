@@ -1,6 +1,6 @@
 import os
 from langchain_chroma import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_cohere import CohereEmbeddings
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -9,11 +9,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 
 def get_vectorstore():
-    embeddings = HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
+    embeddings = CohereEmbeddings(
+        model="embed-english-light-v3.0",
+        cohere_api_key=COHERE_API_KEY
+    )
     vectorstore = Chroma(
         persist_directory="./chromadb_store",
         embedding_function=embeddings

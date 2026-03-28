@@ -1,15 +1,15 @@
 import os
 import time
-import shutil
 from github import Github
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_cohere import CohereEmbeddings
 from dotenv import load_dotenv
 
 load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 ALLOWED_EXTENSIONS = [
     ".py", ".js", ".ts", ".jsx", ".tsx", ".java", ".cpp", ".c",
@@ -105,25 +105,22 @@ def clear_chromadb():
 
 def ingest_repo(repo_url: str):
     print(f"\nStarting ingestion for: {repo_url}")
-
     clear_chromadb()
-
     files = fetch_repo_files(repo_url)
     if not files:
         return {"status": "error", "message": "No readable files found"}
-
     documents, metadatas = chunk_files(files)
-
     print("\nEmbedding and storing in ChromaDB...")
-    embeddings = HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
-
+    embeddings = CohereEmbeddings(
+        model="embed-english-light-v3.0",
+        cohere_api_key=COHERE_API_KEY
+    )
     Chroma.from_texts(
         texts=documents,
         embedding=embeddings,
         metadatas=metadatas,
         persist_directory="./chromadb_store"
     )
-
     print("Ingestion complete!")
     return {
         "status": "success",
@@ -136,7 +133,6 @@ def ingest_repo_stream(repo_url: str):
     import json
 
     yield json.dumps({"type": "status", "message": "STARTING INGESTION..."}) + "\n"
-
     clear_chromadb()
     yield json.dumps({"type": "status", "message": "CLEARED OLD DATA"}) + "\n"
 
@@ -176,12 +172,14 @@ def ingest_repo_stream(repo_url: str):
         return
 
     yield json.dumps({"type": "status", "message": f"CHUNKING {len(files)} FILES..."}) + "\n"
-
     documents, metadatas = chunk_files(files)
 
     yield json.dumps({"type": "status", "message": f"EMBEDDING {len(documents)} CHUNKS..."}) + "\n"
 
-    embeddings = HuggingFaceEmbeddings(model_name="paraphrase-MiniLM-L3-v2")
+    embeddings = CohereEmbeddings(
+        model="embed-english-light-v3.0",
+        cohere_api_key=COHERE_API_KEY
+    )
 
     Chroma.from_texts(
         texts=documents,

@@ -106,7 +106,7 @@ const [currentRepo, setCurrentRepo] = useState("")
         fontSize: "9px",
         lineHeight: "2"
       }}>
-        GITHUB QUERY AGENT — GROQ + HUGGINGFACE EMBEDDINGS + CHROMADB + LANGCHAIN
+        GITHUB QUERY AGENT — POWERED BY GROQ + COHERE EMBEDDINGS + CHROMADB + LANGCHAIN
       </div>
 
     </div>

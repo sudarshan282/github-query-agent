@@ -15,3 +15,7 @@ groq
 langchain-chroma==0.1.4
 tokenizers==0.15.2
 sentence-transformers 
+cohere 
+langchain-cohere 
+cohere 
+langchain-cohere 
