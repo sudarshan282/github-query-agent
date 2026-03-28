@@ -1,4 +1,6 @@
 import os
+import gc
+import chromadb
 from langchain_chroma import Chroma
 from langchain_cohere import CohereEmbeddings
 from langchain_groq import ChatGroq
@@ -11,15 +13,30 @@ load_dotenv()
 
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+CHROMA_PATH = os.getenv("CHROMA_PATH", "./chromadb_store")
+COLLECTION_FILE = os.getenv("COLLECTION_FILE", "/tmp/current_collection.txt")
+
+
+def get_collection_name():
+    try:
+        with open(COLLECTION_FILE, "r") as f:
+            return f.read().strip()
+    except:
+        return "repo"
 
 
 def get_vectorstore():
+    gc.collect()
+    collection_name = get_collection_name()
+    print(f"Using collection: {collection_name}")
     embeddings = CohereEmbeddings(
         model="embed-english-light-v3.0",
         cohere_api_key=COHERE_API_KEY
     )
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
     vectorstore = Chroma(
-        persist_directory="./chromadb_store",
+        client=client,
+        collection_name=collection_name,
         embedding_function=embeddings
     )
     return vectorstore

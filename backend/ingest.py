@@ -1,9 +1,9 @@
 import os
 import time
-import shutil
+import math
+import chromadb
 from github import Github
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_chroma import Chroma
 from langchain_cohere import CohereEmbeddings
 from dotenv import load_dotenv
 
@@ -11,6 +11,8 @@ load_dotenv()
 
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+CHROMA_PATH = os.getenv("CHROMA_PATH", "./chromadb_store")
+COLLECTION_FILE = os.getenv("COLLECTION_FILE", "/tmp/current_collection.txt")
 
 ALLOWED_EXTENSIONS = [
     ".py", ".js", ".ts", ".jsx", ".tsx", ".java", ".cpp", ".c",
@@ -85,11 +87,49 @@ def chunk_files(files: list):
 
 def clear_chromadb():
     try:
-        if os.path.exists("./chromadb_store"):
-            shutil.rmtree("./chromadb_store", ignore_errors=True)
-            print("ChromaDB cleared!")
+        client = chromadb.PersistentClient(path=CHROMA_PATH)
+        existing = client.list_collections()
+        for col in existing:
+            client.delete_collection(col.name)
+            print(f"Deleted collection: {col.name}")
+        del client
+        print("ChromaDB cleared!")
     except Exception as e:
         print(f"Error clearing ChromaDB: {e}")
+
+
+def get_embeddings():
+    return CohereEmbeddings(
+        model="embed-english-light-v3.0",
+        cohere_api_key=COHERE_API_KEY
+    )
+
+
+def save_collection_name(name: str):
+    try:
+        os.makedirs(os.path.dirname(COLLECTION_FILE), exist_ok=True)
+        with open(COLLECTION_FILE, "w") as f:
+            f.write(name)
+    except Exception as e:
+        print(f"Error saving collection name: {e}")
+
+
+def embed_in_batches(embeddings, documents):
+    batch_size = 20
+    total_batches = math.ceil(len(documents) / batch_size)
+    all_embedded = []
+
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        batch_num = (i // batch_size) + 1
+        print(f"Embedding batch {batch_num}/{total_batches}...")
+        batch_embedded = embeddings.embed_documents(batch)
+        all_embedded.extend(batch_embedded)
+        if i + batch_size < len(documents):
+            print("Waiting to avoid rate limit...")
+            time.sleep(62)
+
+    return all_embedded
 
 
 def ingest_repo(repo_url: str):
@@ -100,16 +140,22 @@ def ingest_repo(repo_url: str):
         return {"status": "error", "message": "No readable files found"}
     documents, metadatas = chunk_files(files)
     print("\nEmbedding and storing in ChromaDB...")
-    embeddings = CohereEmbeddings(
-        model="embed-english-light-v3.0",
-        cohere_api_key=COHERE_API_KEY
-    )
-    Chroma.from_texts(
-        texts=documents,
-        embedding=embeddings,
+
+    collection_name = f"repo_{int(time.time())}"
+    save_collection_name(collection_name)
+
+    embeddings = get_embeddings()
+    all_embedded = embed_in_batches(embeddings, documents)
+
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
+    collection = client.get_or_create_collection(name=collection_name)
+    collection.add(
+        documents=documents,
         metadatas=metadatas,
-        persist_directory="./chromadb_store"
+        embeddings=all_embedded,
+        ids=[str(i) for i in range(len(documents))]
     )
+
     print("Ingestion complete!")
     return {
         "status": "success",
@@ -163,18 +209,33 @@ def ingest_repo_stream(repo_url: str):
     yield json.dumps({"type": "status", "message": f"CHUNKING {len(files)} FILES..."}) + "\n"
     documents, metadatas = chunk_files(files)
 
-    yield json.dumps({"type": "status", "message": f"EMBEDDING {len(documents)} CHUNKS..."}) + "\n"
+    collection_name = f"repo_{int(time.time())}"
+    save_collection_name(collection_name)
 
-    embeddings = CohereEmbeddings(
-        model="embed-english-light-v3.0",
-        cohere_api_key=COHERE_API_KEY
-    )
+    embeddings = get_embeddings()
+    batch_size = 20
+    total_batches = math.ceil(len(documents) / batch_size)
+    all_embedded = []
 
-    Chroma.from_texts(
-        texts=documents,
-        embedding=embeddings,
+    for i in range(0, len(documents), batch_size):
+        batch = documents[i:i + batch_size]
+        batch_num = (i // batch_size) + 1
+        yield json.dumps({"type": "status", "message": f"EMBEDDING BATCH {batch_num}/{total_batches}..."}) + "\n"
+        batch_embedded = embeddings.embed_documents(batch)
+        all_embedded.extend(batch_embedded)
+        if i + batch_size < len(documents):
+            yield json.dumps({"type": "status", "message": "RATE LIMIT COOLDOWN... PLEASE WAIT 60s"}) + "\n"
+            time.sleep(62)
+
+    yield json.dumps({"type": "status", "message": "STORING IN CHROMADB..."}) + "\n"
+
+    client = chromadb.PersistentClient(path=CHROMA_PATH)
+    collection = client.get_or_create_collection(name=collection_name)
+    collection.add(
+        documents=documents,
         metadatas=metadatas,
-        persist_directory="./chromadb_store"
+        embeddings=all_embedded,
+        ids=[str(i) for i in range(len(documents))]
     )
 
     yield json.dumps({

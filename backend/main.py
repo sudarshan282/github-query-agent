@@ -9,6 +9,8 @@ from fastapi.responses import StreamingResponse
 
 load_dotenv()
 
+CHROMA_PATH = os.getenv("CHROMA_PATH", "./chromadb_store")
+
 app = FastAPI(title="GitHub Query Agent")
 
 app.add_middleware(
@@ -56,14 +58,14 @@ def ingest_stream(request: RepoRequest):
 def query(request: QuestionRequest):
     if not request.question:
         raise HTTPException(status_code=400, detail="question is required")
-    if not os.path.exists("./chromadb_store"):
+    if not os.path.exists(CHROMA_PATH):
         raise HTTPException(status_code=400, detail="No repo ingested yet. Please ingest a repo first.")
     result = answer_question(request.question)
     return result
 
 @app.post("/improve")
 def improve():
-    if not os.path.exists("./chromadb_store"):
+    if not os.path.exists(CHROMA_PATH):
         raise HTTPException(status_code=400, detail="No repo ingested yet. Please ingest a repo first.")
     result = suggest_improvements()
     return result

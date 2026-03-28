@@ -65,7 +65,7 @@ function RepoInput({ onIngestSuccess }) {
     setProgressLines([])
 
     try {
-      const response = await fetch("https://github-query-agent.onrender.com/ingest-stream", {
+      const response = await fetch("http://localhost:8000/ingest-stream", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
