@@ -1,6 +1,14 @@
 # GitHub Query Agent
 
-An agentic RAG system that ingests GitHub repositories into a vector database and enables natural language querying and AI-powered code review — built with LangChain, Groq, and ChromaDB.
+![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-green?logo=fastapi)
+![React](https://img.shields.io/badge/React-Vite-61DAFB?logo=react)
+![Groq](https://img.shields.io/badge/LLM-Groq-orange)
+![Cohere](https://img.shields.io/badge/Embeddings-Cohere-purple)
+![ChromaDB](https://img.shields.io/badge/VectorDB-ChromaDB-red)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)
+
+An agentic RAG system that ingests GitHub repositories into a vector database and enables natural language querying and AI-powered code review — built with LangChain, Groq, Cohere, and ChromaDB.
 
 ## What it does
 
@@ -17,7 +25,7 @@ An agentic RAG system that ingests GitHub repositories into a vector database an
 - FastAPI — REST API server
 - LangChain — LLM orchestration
 - Groq (Llama 3.3 70b) — AI answers and suggestions
-- Google Gemini — text embeddings
+- Cohere — text embeddings (embed-english-light-v3.0)
 - ChromaDB — local vector database
 - PyGithub — GitHub API integration
 
@@ -26,7 +34,15 @@ An agentic RAG system that ingests GitHub repositories into a vector database an
 - Tailwind CSS
 - Pixel art UI with Press Start 2P font
 
-## Setup
+**Deployed on**
+- Vercel (frontend)
+- Render (backend)
+
+## Live Demo
+
+[github-query-agent.vercel.app](https://github-query-agent.vercel.app)
+
+## Setup (Local)
 
 ### 1. Clone the repo
 ```bash
@@ -46,14 +62,14 @@ pip install -r requirements.txt
 ### 3. Add your API keys
 Copy `.env.example` to `.env` and fill in your keys:
 ```
-GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
+COHERE_API_KEY=your_cohere_api_key
 GITHUB_TOKEN=your_github_token_optional
 ```
 
 Get your keys here:
-- Gemini: [aistudio.google.com](https://aistudio.google.com)
 - Groq: [console.groq.com](https://console.groq.com)
+- Cohere: [cohere.com](https://cohere.com)
 - GitHub Token: GitHub → Settings → Developer Settings → Personal Access Tokens (optional, for private repos)
 
 ### 4. Start the backend
@@ -83,5 +99,11 @@ Go to `http://localhost:5173`
 
 - Python 3.11+
 - Node.js 18+
-- Gemini API key (free at aistudio.google.com)
 - Groq API key (free at console.groq.com)
+- Cohere API key (free at cohere.com)
+
+## Notes
+
+- First request after inactivity may take 30-60 seconds (Render free tier spin-up)
+- Only public GitHub repositories are supported without a token
+- Private repos require a GitHub personal access token
