@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef } from "react"`nconst API_URL = import.meta.env.VITE_API_URL || "https://github-query-agent.onrender.com"
+import { useState, useEffect, useRef } from "react"
 
+const API_URL = import.meta.env.VITE_API_URL || "https://github-query-agent.onrender.com"
 function RepoInput({ onIngestSuccess }) {
   const [repoUrl, setRepoUrl] = useState("")
   const [githubToken, setGithubToken] = useState("")
@@ -65,7 +66,7 @@ function RepoInput({ onIngestSuccess }) {
     setProgressLines([])
 
     try {
-      const response = await fetch("`${API_URL}/ingest-stream", {
+      const response = await fetch(`${API_URL}/ingest-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
